@@ -60,5 +60,40 @@ export const PATCH = async (request: Request) => {
       { status: 200 },
     );
     //eslint-disable-next-line
-  } catch (error: any) {}
+  } catch (error: any) {
+    return new NextResponse("Error in updating user" + error.message, {
+      status: 500,
+    });
+  }
+};
+
+export const DELETE = async (request: Request) => {
+  try {
+    const { userId } = await request.json();
+    connectDB();
+    if (!userId) {
+      return new NextResponse(
+        JSON.stringify({ message: "ID or the username not found" }),
+        { status: 400 },
+      );
+    }
+    if (!Types.ObjectId.isValid(userId)) {
+      return new NextResponse(JSON.stringify({ message: "Invalid user id" }), {
+        status: 400,
+      });
+    }
+    const deletedUser = await User.findByIdAndDelete(userId);
+    return new NextResponse(
+      JSON.stringify({
+        message: "User deleted successfuly",
+        user: deletedUser,
+      }),
+      { status: 200 },
+    );
+    //eslint-disable-next-line
+  } catch (error: any) {
+    return new NextResponse("Error in updating user" + error.message, {
+      status: 500,
+    });
+  }
 };
